@@ -9,7 +9,13 @@ namespace OneNet.PubSub.Client.ConsoleApp
 {
     internal class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
+        {
+            var task = Task.Run(NewMethod);
+            task.Wait();
+        }
+
+        private static async Task NewMethod()
         {
             var topicHandler = new TopicHandler(OnNewMessage, OnAbortTopic);
             var baseUrl = ConfigurationManager.AppSettings["baseUrl"];
@@ -24,7 +30,7 @@ namespace OneNet.PubSub.Client.ConsoleApp
                 IsKeepTopicWhenOwnerDisconnect = false,
                 IsUpdateOwnerConnection = true,
             });
-            
+
             var topics = await pubSubConnection.SearchTopic("topic-test");
             Console.WriteLine(JsonConvert.SerializeObject(topics));
 
@@ -37,7 +43,7 @@ namespace OneNet.PubSub.Client.ConsoleApp
                 await pubSubConnection.Publish("topic-test", data);
             }
         }
-        
+
         private static void OnNewMessage(string topic, object data)
         {
             Console.WriteLine(data.ToString());
